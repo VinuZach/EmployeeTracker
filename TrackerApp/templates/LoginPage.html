@@ -1,0 +1,28 @@
+{% extends "basehtml.html" %}
+{% block content %}
+{% load static %}
+
+<div style="display: flex;justify-content: center;margin-top: 5%;flex-direction: column;align-items: center;">
+    <h2 class="title_highLight_underline">
+        Login</h2>
+      <br>
+            <br>
+        <label style="color: #fff700;"> {{ errorMessage }}</label>
+    <form method="post" style="display: flex;flex-direction: column;    margin-top: 50px;">
+         {% csrf_token %}
+        <label class="allCaps_label">username</label>
+        <input name="username" class="text_input" type="text" autocomplete="off" required>
+            <br>
+            <br>
+         <label class="allCaps_label" >Password</label>
+        <input name="password" class="text_input" type="password" autocomplete="off" required>
+
+        <button type="submit" style="text-transform: uppercase;width: fit-content;min-width: 232px;border: 0px;align-self: center;padding: 15px;
+                 margin: 100px;border-radius: 19px;background: var(--secondaryColor);color: white;">submit</button>
+    </form>
+
+
+</div>
+
+{% endblock %}
+

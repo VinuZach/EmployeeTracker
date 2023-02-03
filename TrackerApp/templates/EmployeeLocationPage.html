@@ -1,0 +1,99 @@
+{% extends "basehtml.html" %}
+{% block content %}
+{% load static %}
+<div style="    display: flex;
+    margin-top: 41px;
+    flex-direction: row;
+    align-items: flex-start;">
+    <img onclick="window.location.href='{{ request.scheme }}://{{ request.get_host }}/dashboard'"
+         style="height:50px;margin: 0px 50px;"
+         src="{{ request.scheme }}://{{ request.get_host }}{{MEDIA_URL}}/media/static_images/back_icon.png"/>
+    <div>
+
+        <h3 style="color: var(--highLights);font-family: sans-serif;letter-spacing: 5px; font-weight: bolder;     line-height: 2.5;   margin-top: 30px;
+    text-decoration: underline; text-underline-offset: 11px;text-transform: uppercase;">Location Report</h3>
+
+    <div>
+          <label class="allCaps_label">username</label>
+         <select name="selectedUser" id="selectedUser" style="padding:10px 20px;margin: 0px 1em;" onchange="getSelectedUser()">
+               <option value="-1"> Select User</option>
+            {% for user in userDetailsList %}
+            <option value="{{user.id}}"> {{user.username}}</option>
+
+            {% endfor %}
+        </select>
+    </div>
+        <div style="display:flex;">
+            <h2 class="allCaps_label">
+        Total Distance</h2>
+        <p id="totalDistance" style="margin: 10px 2em;align-self: center;color: var(--secondaryColor);font-size: 2em;"></p>
+        </div>
+<table id="employeeListTable" style="color: var(--highLights);" cellspacing="10px" cellpadding="10px" >
+
+</table>
+        <div id="errorMessage" style="color: var(--highLights);">No Tracking Data</div>
+    </div>
+
+
+</div>
+<script>
+
+function getSelectedUser() {
+  var x = document.getElementById("selectedUser").value;
+if(x==-1)
+return
+  var totalDistance = document.getElementById("totalDistance");
+        var url = new URL('{{ request.scheme }}://{{ request.get_host }}/getEmployeeLocationList'),
+    params = {"userId":x}
+    url.search = new URLSearchParams(params).toString();
+   fetch(url)
+        .then(response =>{
+            return response.json();
+        }).then(data =>{
+
+              if(data.totalDistance!=null)
+              totalDistance.innerHTML=data.totalDistance
+              else
+              totalDistance.innerHTML=0
+              displayDistanceDetail(data.employeeLocationList)
+        })
+}
+
+function displayDistanceDetail(employeeLocationList)
+{
+  var errorMessage = document.getElementById("errorMessage");
+
+var table = document.getElementById("employeeListTable");
+table.innerHTML = "";
+
+if(employeeLocationList.length>0)
+{
+errorMessage.style.display = "none";
+var row = table.insertRow(0);
+
+var cell1 = row.insertCell(0);
+var cell2 = row.insertCell(1);
+
+cell1.innerHTML = "Latitude";
+cell2.innerHTML = "Longitude";
+}
+else
+errorMessage.style.display = "block";
+
+    for(let i=0;i<employeeLocationList.length;i++)
+    {
+
+
+var row = table.insertRow(i+1);
+
+var cell1 = row.insertCell(0);
+var cell2 = row.insertCell(1);
+
+cell1.innerHTML = employeeLocationList[i].lat;
+cell2.innerHTML = employeeLocationList[i].lng;
+
+    }
+}
+
+</script>
+{% endblock %}

@@ -1,0 +1,49 @@
+:root
+{
+--backgroundColor:#2a2e45;
+--primaryColor:#bfacaa;
+--secondaryColor:#a44200;
+--highLights:#eaffda;
+--labelColor:#bfacaa
+}
+
+
+body{
+    background:var(--backgroundColor)
+}
+
+input:focus {
+  background: transparent;
+  border: 0px;
+  border-bottom: 1px solid var(--highLights);
+  outline: none;
+  color: white;
+
+}
+.text_input
+{
+   background: transparent;
+   border: 0px;
+   border-bottom: 1px solid black;
+   margin-top:20px;
+   min-width: 400px;
+   font-size: 25px;
+   color: var(--secondaryColor);
+   letter-spacing: 2px;
+}
+
+.allCaps_label
+{
+text-transform: uppercase;
+color:var(--labelColor)
+}
+
+.title_highLight_underline
+{
+    color: var(--highLights);
+    font-family: sans-serif;
+    letter-spacing: 5px;
+    font-weight: bolder;
+    text-decoration: underline;
+    text-underline-offset: 11px;text-transform: uppercase;
+}

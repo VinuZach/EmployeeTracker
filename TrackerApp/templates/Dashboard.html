@@ -1,0 +1,758 @@
+{% extends "basehtml.html" %}
+{% block content %}
+{% load static %}
+{% load classtags %}
+<style>
+
+.pointer_cursor
+{
+ cursor: pointer;
+}
+.form-popup {
+  padding: 25px;
+  min-width: 30%;
+  position: fixed;
+  bottom: 5px;
+  right: 15px;
+  background: var(--labelColor);
+  border: 1px solid #f1f1f1;
+  z-index: 9;
+}
+    .bottom_border_left_radius
+    {
+        border-bottom-left-radius: 5px;
+    }
+
+      .bottom_border_right_radius
+    {
+        border-bottom-right-radius: 5px;
+    }
+
+    .horizontal_margin
+    {
+        margin-left: 2px;
+        margin-right: 2px;
+    }
+    .action_option
+    {
+        flex:1;
+        padding:15px;
+        background: white;
+        color: var(--secondaryColor);
+        margin-top: 2px;
+        text-transform: uppercase;
+    }
+    .centerAlign_text
+    {
+        text-align: center;
+    }
+
+    #parentDiv_two_segment
+    {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: space-between;
+    }
+    #userDetails
+    {
+         display: flex;
+         flex-direction: row;
+         align-items: center;
+    }
+
+    #function_segments
+    {
+        margin-top:30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .action_segments
+    {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+
+   .action_item {
+    width: 30%;border: var(--secondaryColor);border-style: dashed;text-align: center;
+                 color: var(--secondaryColor);margin: 10px;background: white;padding: 50px;text-transform: capitalize;
+                     cursor: pointer;
+    }
+    .profile_hover_menu > div
+    {
+        text-transform: capitalize;
+        padding: 10px;
+    }
+    .profile_hover_menu
+    {
+        background:white;
+        display:none;
+        padding: 15px;
+    }
+    /* width */
+    ::-webkit-scrollbar {
+      height: 4px;
+
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+      background: #888;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+    .cards {
+      margin: 30px  10px;
+      display: grid;
+      gap: 1rem;
+      cursor: pointer;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+
+    }
+
+    .card {
+      color: white;
+      width: 100%;
+    }
+
+
+
+@media only screen and (max-width: 600px)
+{
+
+    #parentDiv_two_segment
+    {
+         display: flex;
+         flex-direction: column;
+         justify-content: space-between;
+    }
+
+     .action_segments
+    {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+    }
+
+}
+
+
+
+</style>
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"/>
+
+<div id="parentDiv_two_segment">
+    <div style="display: flex;flex-direction: column;align-items: center;">
+        <div>
+            <div id="userDetails" onmouseover="profile_settings(true)" onmouseout="profile_settings(false)">
+                <h5 style="color: var(--highLights);font-family: sans-serif;letter-spacing: 5px;font-weight: bolder;
+                 text-underline-offset: 11px;text-transform: uppercase;">{{user}}</h5>
+
+                <img style="height:50px;height: 35px; margin: 0px 10px;"
+                     src="{{ request.scheme }}://{{ request.get_host }}{{MEDIA_URL}}/media/static_images/settings_icon.svg"/>
+
+
+            </div>
+            <div onmouseenter="profile_settings(true)" onmouseleave="profile_settings(false)" id="profile_menu"
+                 class="profile_hover_menu">
+                <div class="pointer_cursor"
+                     onclick="window.location.href='{{ request.scheme }}://{{ request.get_host }}/newAccountCreation'">
+                    new account
+                </div>
+                <div class="pointer_cursor"
+                     onclick="window.location.href='{{ request.scheme }}://{{ request.get_host }}/userSignOut'">
+                    Sign out
+                </div>
+            </div>
+        </div>
+
+        <div id="function_segments">
+            <div style="background: var(--secondaryColor);padding: 20px 40px;color: white;font-size: large;
+                        text-transform: uppercase;text-align: center;cursor:pointer;"
+                 onclick="window.location.href='{{ request.scheme }}://{{ request.get_host }}/EmployeeLocation'">
+                Tracking Report
+
+
+            </div>
+
+
+            {% if user.is_superuser %}
+            <div class="action_segments">
+
+                <div class="action_item" onclick="displayLocationList()">
+                    Add New location
+                </div>
+
+                <div class="action_item" onclick="displayModeOfBusiness()">
+                    Add New Mode of business
+                </div>
+
+                <div class="action_item"
+                     onclick="window.location.href='{{ request.scheme }}://{{ request.get_host }}/newCollectionEntry'">
+                    New Collection Entry
+                </div>
+            </div>
+            {% else %}
+
+            <div class="action_segments">
+
+                <div class="action_item">
+                    New Collection Entry
+                </div>
+
+
+            </div>
+
+
+            {% endif %}
+
+
+        </div>
+    </div>
+
+
+    <div style="width: 100%;margin:20px;  overflow: hidden;">
+        <div style="color: var(--highLights);font-family: sans-serif;letter-spacing: 5px; font-weight: bolder;    margin-top: 30px;
+    text-decoration: underline; text-underline-offset: 11px;text-transform: uppercase;">Report
+        </div>
+
+        <div style="margin-top: 7em;display: flex;flex-direction: row;">
+            <div onmouseenter="displayFilterItems(true)" onmouseleave="displayFilterItems(false)" style="background: white; width: fit-content;display: flex;padding: 8px 25px;text-transform: uppercase;
+                        flex-direction: row; align-items: center;    margin-bottom: 8px;">
+                Filter
+                <img style="height:50px;height: 35px; margin: 0px 10px;"
+                     src="{{ request.scheme }}://{{ request.get_host }}{{MEDIA_URL}}/media/static_images/Filter_Icon.png"/>
+
+
+            </div>
+
+
+            <div id="filter_container" style="display: flex;align-items: stretch;overflow-x: scroll;
+                        max-width: 50rem;padding-bottom:5px;" onmouseenter="displayFilterItems(true)"
+                 onmouseleave="displayFilterItems(false)">
+
+
+                <div id="startDate" isUserSelected="false" style="display: none; border: var(--secondaryColor); border-width: 2px; margin: 0px 14px;
+                            border-style: solid;align-items: stretch;">
+                    <div style="background:var(--secondaryColor);margin-right:10px;padding: 0px 15px;display:flex;
+                                    align-items:center;    text-transform: uppercase;color: white;">
+                        start Date
+                    </div>
+                    <div onclick="showDatePicker('startDate')"
+                         style="display:flex;padding: 0px 15px;align-items:center;    text-transform: uppercase;color: white;">
+                        <input id="filter_datePicker_startDate" type="date"
+                               style="background: transparent;color: white;border: 0px;"
+                               onchange="changeDate(this.value,'startDate')"/>
+                    </div>
+                </div>
+
+                <div id="endDate" isUserSelected="false" style="display: none; border: var(--secondaryColor); border-width: 2px; margin: 0px 14px;
+                            border-style: solid;align-items: stretch;">
+                    <div style="background:var(--secondaryColor);margin-right:10px;padding: 0px 15px;display:flex;
+                                    align-items:center;    text-transform: uppercase;color: white;">
+                        End Date
+                    </div>
+                    <div onclick="showDatePicker('endDate')"
+                         style="display:flex;padding: 0px 15px;align-items:center;    text-transform: uppercase;color: white;">
+                        <input id="filter_datePicker_endDate" type="date"
+                               style="background: transparent;color: white;border: 0px;"
+                               onchange="changeDate(this.value,'endDate')"/>
+                    </div>
+                </div>
+
+
+                <div id="feasibility" isUserSelected="false" style="display: none; border: var(--secondaryColor); border-width: 2px; margin: 0px 14px;
+                            border-style: solid;align-items: stretch;">
+                    <div style="background:var(--secondaryColor);margin-right:10px;padding: 0px 15px;display:flex;
+                                    align-items:center;    text-transform: uppercase;color: white;">
+                        Feasibility
+                    </div>
+                    <div style="display:flex;padding: 0px 15px;align-items:center;    text-transform: uppercase;color: white;">
+
+
+                        <select name="feasibility_value" id="feasibility_value" style="padding:10px 20px;margin: 0px 1em;background: transparent; border: none;
+                 color: white;" onchange="setFeasibility(this.value)">
+                            <option style="color:var(--secondaryColor)" value="-1"> Select All Feasibility</option>
+                            {% for key, value in feasibility %}
+                            <option style="color:var(--secondaryColor)" value="{{key}}"> {{value}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+  <div id="errorMessage" style="color: var(--highLights);text-align: center;">No Collection Data</div>
+        <div id="collectionParent" class="cards">
+            <div id="collectionItem" class="card">
+
+                <div>
+                    <div style="background: var(--secondaryColor);padding: 10px;text-align: center;display: flex;
+                               text-transform: uppercase; flex-direction: row;align-items: flex-end; border-top-left-radius: 5px;
+                             border-top-right-radius: 5px;    justify-content: space-between;">
+                       <span id="companyName" style="text-align: left;display: inline-block;width: 180px;white-space: nowrap;overflow: hidden !important;
+                                     text-overflow: ellipsis;"></span>
+                        <div id="companyFeasibility" style="font-size:16px;"></div>
+                    </div>
+                    <div id="status">
+
+                    </div>
+                    <div style="padding: 10px;background: white;">
+                        <div id="representative" style="color:black;font-size: 25px;    text-transform: uppercase;">
+
+                        </div>
+                        <div style="color:var(--secondaryColor);text-align: end;
+                                font-size: 15px;">
+
+
+                        </div>
+                        <div id="companyRemark" style="color:var(--secondaryColor);margin-top:20px;"></div>
+                    </div>
+                    <div style="display: flex;flex-direction: row;justify-content: space-between;">
+                        <div id="addNewRemark" class="action_option centerAlign_text bottom_border_left_radius">
+                            Add remark
+                        </div>
+                        <div id="closeDeal" class="action_option centerAlign_text horizontal_margin"
+                        >
+                            Close deal
+                        </div>
+
+                        <div id="dropDeal" class="action_option centerAlign_text bottom_border_right_radius"
+                        >
+                            Drop deal
+                        </div>
+
+                    </div>
+                </div>
+
+
+            </div>
+
+
+        </div>
+    </div>
+    <div id="dialogBox" class="form-popup">
+        <img onclick="open_CloseDialog(false,'location')" style="height:50px;margin: 0px 50px;transform: rotate(180deg);    position: absolute;
+                right: 0;"
+             src="{{ request.scheme }}://{{ request.get_host }}{{MEDIA_URL}}/media/static_images/back_icon.png"/>
+        <form method="post"
+              style="display: flex;flex-direction: column;align-items: flex-start;margin-top:60px;">
+            {% csrf_token %}
+            <label style="text-transform: capitalize;text-decoration: underline;text-underline-offset: 8px;    margin-bottom: 25px;"
+                   id="newData_title">New Location</label>
+            <input id="dialog_dataType" type="hidden" name="dialog_dataType"/>
+            <input type="text" name="newData" autocomplete="off" class="text_input"/>
+            <div id="existingList_parent" style="display: flex;align-items: stretch;overflow-x: scroll;
+                        max-width: 30rem;padding-bottom:5px;margin-top:20px">
+                <label id="existingList" style="display:none"> ssss </label>
+            </div>
+            <button type="submit" style="text-transform: uppercase;width: fit-content;min-width: 232px;border: 0px;align-self: end;padding: 15px;
+                 margin-top: 30px;border-radius: 19px;background: var(--secondaryColor);color: white;">Upload
+            </button>
+        </form>
+    </div>
+
+</div>
+
+<dialog id="favDialog" style="border: 1px black solid;border-radius: 10px;">
+    <form method="dialog">
+        <p id="dialogText" style="    font-size: 28px;
+    margin: 50px 23px;">
+            Confirm changing status of Company
+        </p>
+
+        <div>
+            <button value="cancel" style="text-transform: uppercase;width: fit-content;border: 0px;align-self: center;padding: 15px;
+                 border-radius: 19px;background: var(--secondaryColor);color: white;">Cancel
+            </button>
+
+
+            <button id="confirmBtn" value="default" style="text-transform: uppercase;width: fit-content;border: 0px;align-self: center;padding: 15px;
+                 border-radius: 19px;background: var(--secondaryColor);color: white;"
+                    onclick="requestCompanyStatusChange()">Confirm
+            </button>
+        </div>
+    </form>
+</dialog>
+<script>
+
+
+
+function displayFilterItems(isToOpen)
+{
+var childElements = document.querySelectorAll("#filter_container > *" )
+  for(var i = 0 ; i < childElements.length ; i++)
+        {
+
+        if(isToOpen)
+     childElements[i].style.display = "flex";
+     else
+     {
+     var isSelected=childElements[i].getAttribute("isUserSelected")
+      if(isSelected=='false')
+        childElements[i].style.display = "none";
+     }
+       }
+}
+var startDate=""
+var endDate=""
+var selectedFeasibility=""
+function setFeasibility(value)
+{
+
+selectedFeasibility=value
+document.querySelector("#feasibility").setAttribute("isUserSelected", "true");
+retrieveCollectionData()
+}
+
+function changeDate(dateValue,dateType)
+{
+
+if(dateType=='endDate')
+{
+document.querySelector("#endDate").setAttribute("isUserSelected", "true");
+endDate=dateValue
+}
+else
+{
+startDate=dateValue
+document.querySelector("#startDate").setAttribute("isUserSelected", "true");
+}
+retrieveCollectionData()
+}
+ retrieveCollectionData()
+
+
+ function retrieveCollectionData()
+ {
+   var url = new URL('{{ request.scheme }}://{{ request.get_host }}/retrieveCollectionData'),
+    params = {"startDate":startDate,"endDate":endDate,"selectedFeasibility":selectedFeasibility}
+    url.search = new URLSearchParams(params).toString();
+   fetch(url)
+        .then(response =>{
+            return response.json();
+        }).then(data =>{
+
+
+         const courseParent=document.querySelector("#collectionParent")
+
+         while (courseParent.childNodes.length > 2) {
+    courseParent.removeChild(courseParent.lastChild);
+}
+if(data.length>=1)
+{
+
+   const courseItem=document.querySelector("#collectionItem")
+
+  courseParent.style.display="grid";
+   for (let i = 0; i <data.length; i++)
+   {
+   let clone ;
+
+      if(i==0)
+              clone=courseItem
+              else
+             clone = courseItem.cloneNode(true);
+          clone.querySelector("#companyName").innerHTML=data[i].companyName
+          clone.querySelector("#addNewRemark").onclick=
+          function(){
+          window.location.href='{{ request.scheme }}://{{ request.get_host }}/addNewRemarks/'+data[0].companyId
+          };
+
+          clone.querySelector("#closeDeal").onclick=
+          function(){
+          confirmStatusChange(data[i].companyId,0)
+          };
+
+          clone.querySelector("#dropDeal").onclick=
+          function(){
+          confirmStatusChange(data[i].companyId,2)
+          };
+
+
+          clone.querySelector("#companyFeasibility").innerHTML=getFeasibilityTag(data[i].feasibility)
+          clone.querySelector("#representative").innerHTML=data[i].companyRepresentative
+          clone.querySelector("#companyRemark").innerHTML=data[i].remark
+          clone.querySelector("#status").style.background=getStatusColor(data[i].status1)
+          clone.querySelector("#status").style.height = "20px";
+               if(i!=0)
+                 {
+                clone.id = 'elem2';
+                courseItem.after(clone);
+                 }
+   }
+ errorMessage.style.display="none";
+}
+else
+{
+ errorMessage.style.display="block";
+ courseParent.style.display="none";
+ }
+
+        })
+
+ }
+
+function getStatusColor(status){
+
+    if (status == 0)
+        return "#d95656"
+    else if (status == 1)
+        return "#ffffff"
+    else
+        return "#dce377"
+ }
+function getFeasibilityTag(feasibility)
+{
+    if (feasibility == 1)
+        return "High"
+    else if (feasibility == 2)
+        return "Medium"
+    else
+        return "Low"
+}
+const favDialog = document.getElementById('favDialog');
+const errorMessage = document.getElementById('errorMessage');
+const dialogText = document.getElementById('dialogText');
+const confirmBtn = favDialog.querySelector('#confirmBtn');
+
+var newStatuValue=-1
+var companyIdValue=-1
+function confirmStatusChange(companyId,newStatus)
+{
+newStatuValue=newStatus
+companyIdValue=companyId
+statusString=""
+if(newStatuValue==2)
+statusString=" Drop"
+else
+statusString=" Close"
+
+dialogText.innerHTML="Are you Sure to Change Company Status to <strong>"+statusString+"</strong>"
+ favDialog.showModal();
+}
+
+
+function requestCompanyStatusChange()
+{
+
+var url = new URL('{{ request.scheme }}://{{ request.get_host }}/changeCompanyStatus'),
+    params = {"companyId":companyIdValue,'newStatus':newStatuValue}
+    url.search = new URLSearchParams(params).toString();
+   fetch(url)
+        .then(response =>{
+            return response.json();
+        }).then(data =>{
+                window.location.href='{{ request.scheme }}://{{ request.get_host }}/dashboard'
+        })
+
+}
+
+
+
+
+open_CloseDialog(false,null)
+
+
+ existingList_parent=document.getElementById("existingList_parent")
+
+existingList_parent.addEventListener('wheel', (event) => {
+  event.preventDefault();
+  existingList_parent.scrollBy({
+    left: event.deltaY < 0 ? -30 : 30,
+  });
+});
+
+
+function open_CloseDialog(toOpen,isLocation)
+{
+
+if(isLocation==null)
+{
+document.getElementById("dialogBox").style.display = "none";
+return;
+}
+else
+{
+var dialogTitle=document.getElementById("newData_title")
+
+    if(isLocation=='location')
+    dialogTitle.innerHTML="New Location"
+    else
+      dialogTitle.innerHTML="New Mode of business"
+}
+
+var dialogDataType=document.getElementById("dialog_dataType")
+dialogDataType.value=isLocation
+if(toOpen)
+{
+document.getElementById("dialogBox").style.display = "block";
+
+   const courseItem=document.querySelector("#existingList")
+  const courseParent=document.querySelector("#existingList_parent")
+  var totalSize=0
+  if(isLocation=='location')
+  totalSize=locationList.length
+  else
+  totalSize=modeOfBusiness.length
+
+
+while (courseParent.childNodes.length > 2) {
+    courseParent.removeChild(courseParent.lastChild);
+}
+  for (let i = 0; i <totalSize; i++) {
+   let clone ;
+
+      if(i==0)
+              clone=courseItem
+              else
+             clone = courseItem.cloneNode(true);
+            clone.style="display:block;padding: 10px 30px;border-radius: 15px; border: 1px white solid;margin:10px;    text-transform: capitalize;"
+
+            if(isLocation=='location')
+               clone.innerHTML = locationList[i].locationName
+              else
+               clone.innerHTML = modeOfBusiness[i].businessMode
+
+                 if(i!=0)
+                 {
+                clone.id = 'elem2';
+                courseItem.after(clone);
+                 }
+  }
+
+}
+else
+document.getElementById("dialogBox").style.display = "none";
+
+
+}
+
+var locationList=[]
+var modeOfBusiness=[]
+
+
+if("{{responseMessage}}".includes('New Location'))
+{
+locationList=[]
+}
+
+if("{{responseMessage}}".includes('New business mode Added'))
+{
+locationList=[]
+}
+    function displayLocationList()
+    {
+        if(locationList.length==0)
+         retrieveLocationList()
+        else
+            open_CloseDialog(true,'location')
+
+    }
+    function displayModeOfBusiness()
+    {
+     if(modeOfBusiness.length==0)
+         retrieveModeOfBusiness()
+        else
+            open_CloseDialog(true,'businessMode')
+    }
+
+function retrieveModeOfBusiness()
+{
+ fetch('{{ request.scheme }}://{{ request.get_host }}/getAllModeOfBusiness')
+       .then(response =>{
+            return response.json();
+        }).then(data =>{
+            modeOfBusiness=data.modeOfBusiness
+
+            if(modeOfBusiness.length>0)
+            {
+                open_CloseDialog(true,'businessMode')
+            }
+        })
+
+
+}
+
+function retrieveLocationList()
+{
+   fetch('{{ request.scheme }}://{{ request.get_host }}/getAllLocationList')
+       .then(response =>{
+            return response.json();
+        }).then(data =>{
+            locationList=data.locationList
+
+            if(locationList.length>0)
+            {
+                open_CloseDialog(true,'location')
+            }
+        })
+}
+
+element=document.getElementById("filter_container")
+
+element.addEventListener('wheel', (event) => {
+  event.preventDefault();
+  element.scrollBy({
+    left: event.deltaY < 0 ? -30 : 30,
+  });
+});
+
+
+
+
+
+document.getElementById('filter_datePicker_startDate').valueAsDate = new Date();
+document.getElementById('filter_datePicker_endDate').valueAsDate = new Date(new Date().getTime()+(20*24*60*60*1000));
+ element=document.getElementById("filter_container")
+
+element.addEventListener('wheel', (event) => {
+  event.preventDefault();
+  element.scrollBy({
+    left: event.deltaY < 0 ? -30 : 30,
+  });
+});
+
+
+function showDatePicker(dateType)
+{
+
+if(dateType=='endDate')
+   document.getElementById("filter_datePicker_endDate").showPicker();
+   else
+   document.getElementById("filter_datePicker_startDate").showPicker();
+
+}
+    function profile_settings(isHover)
+    {
+
+
+        if(isHover)
+        document.getElementById("profile_menu").style="display:block;"
+        else
+        document.getElementById("profile_menu").style="display:none;"
+    }
+
+
+
+
+
+
+
+
+</script>
+{% endblock %}

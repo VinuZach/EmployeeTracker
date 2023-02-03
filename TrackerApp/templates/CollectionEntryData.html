@@ -1,0 +1,260 @@
+{% extends "basehtml.html" %}
+{% block content %}
+{% load static %}
+{% load classtags %}
+
+
+<div style="align-items: flex-start;margin: 30px;">
+
+    <div style="display: flex;flex-direction: row; align-items: center;">
+          <img onclick="window.location.href='{{ request.scheme }}://{{ request.get_host }}/dashboard'" style="height:50px;margin: 0px 50px;"
+                         src="{{ request.scheme }}://{{ request.get_host }}{{MEDIA_URL}}/media/static_images/back_icon.png"/>
+    <h3 style="color: var(--highLights);font-family: sans-serif;letter-spacing: 5px; font-weight: bolder;     line-height: 2.5;   margin-top: 30px;
+    text-decoration: underline; text-underline-offset: 11px;text-transform: uppercase;">New Collection Details</h3>
+    </div>
+
+    <div style=" margin: 1em 11px 10px 7em; display: flex; width: 60%; flex-direction: column;">
+        <form method="post" style="margin: 5em 11px;display: flex;flex-direction: column;">
+        {% csrf_token %}
+
+        <label class="allCaps_label">Company Name</label>
+        <input id="companyname" name="companyName" class="text_input" type="text" autocomplete="off" required>
+        <div id="compnaylistdiv">
+
+        </div>
+        <br>
+        <label class="allCaps_label">Company Representative</label>
+        <input id="comp_repret" name="comp_repret" class="text_input" type="text" autocomplete="off" required>
+
+        <br>
+        <label class="allCaps_label">Phone</label>
+        <input id="comp_phone" name="comp_phone" class="text_input" onkeypress="return onlyNumberKey(event) " required>
+        <input id="company_id" name="company_id" hidden="hidden">
+
+        <br>
+        <label class="allCaps_label">Mode of Business</label>
+        <select id="mode_of_business" name="mode_of_business" class="text_input" autocomplete="off" style="text-transform: capitalize" multiple required>
+
+            {% for mode in modeOfBusiness %}
+            <option value="{{mode}}">{{ mode }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <label class="allCaps_label">Enquiry</label>
+        <select id="enquiry" name="enquiry" class="text_input" multiple autocomplete="off" required>
+
+              {% for enquiry in enquiryList %}
+            <option value="{{enquiry.id}}">{{ enquiry.enquiryName }}</option>
+            {% endfor %}
+        </select>
+        <br>
+
+        <label class="allCaps_label">Feasibility</label>
+        <select name="feasibility" id="feasibility" style="margin-top:15px;padding: 10px;" required>
+            <option value="" disabled selected>Select</option>
+            {% for f in feasibilityValues %}
+            <option value="{{f}}">{{ f|getFeasibilityTag }}</option>
+            {% endfor %}
+
+        </select>
+        <br>
+        <br>
+        <label class="allCaps_label">Next Followup Date</label>
+                 <br>
+        <div onclick="showDatePicker()"
+             style="display:flex;padding: 0px 15px;align-items:center;    text-transform: uppercase;color: white;" >
+            <input id="followup_datePicker" type="date" name="followUpDate"
+                   style="background: white;color: black;border: 0px;padding:10px;margin-top:10px;"/>
+        </div>
+     <br>
+        <br>
+        <label class="allCaps_label">Remarks</label>
+        <input id="remarks" name="remarks" class="text_input" type="text" autocomplete="off" required>
+        <br>
+
+        <label class="allCaps_label">Reference</label>
+        <input id="reference" name="reference" class="text_input" type="text" autocomplete="off">
+
+        <br>
+        <br>
+        <br>
+        <br>
+        <button type="submit" style="text-transform: uppercase;width: fit-content;min-width: 232px;border: 0px;align-self: center;padding: 15px;
+                 margin: 100px;border-radius: 19px;background: var(--secondaryColor);color: white;">Upload
+        </button>
+    </form>
+
+    </div>
+
+</div>
+
+<script>
+document.getElementById('followup_datePicker').valueAsDate = new Date();
+function showDatePicker()
+{
+   document.getElementById("followup_datePicker").showPicker();
+
+}
+
+      function onlyNumberKey(evt) {
+
+            // Only ASCII character in that range allowed
+            var ASCIICode = (evt.which) ? evt.which : evt.keyCode
+            if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
+                return false;
+            return true;
+        }
+
+    var selectedCompanyId=-1;
+    var companyRep=-1;
+    var phoneNumber=-1;
+
+    var comp_repret_element= document.getElementById("comp_repret")
+    var comp_phone_element= document.getElementById("comp_phone")
+    var comp_company_id_element= document.getElementById("company_id")
+    class CompanyDetails
+    {
+        constructor(companyId,companyName,comp_representative,phoneNumber)
+        {
+            this.companyId = companyId;
+            this.companyName = companyName;
+            this.comp_representative = comp_representative;
+            this.phoneNumber = phoneNumber;
+        }
+    }
+   var companyDetailsList=[];
+
+
+
+     {% for companyItem in companyList %}
+
+            companyDetailsList.push(new CompanyDetails({{companyItem.companyId.id}},"{{companyItem.companyId.companyName}}"
+            ,"{{companyItem.companyId.companyRepresentative}}","{{companyItem.phoneNumber}}"))
+        {% endfor %}
+
+
+function autocomplete(inp, companyDetailsList) {
+  /*the autocomplete function takes two arguments,
+  the text field element and an array of possible autocompleted values:*/
+  var currentFocus;
+  /*execute a function when someone writes in the text field:*/
+  inp.addEventListener("input", function(e) {
+      var a, b, i, val = this.value;
+      /*close any already open lists of autocompleted values*/
+      closeAllLists();
+      if (!val) { return false;}
+      currentFocus = -1;
+      /*create a DIV element that will contain the items (values):*/
+      a = document.createElement("DIV");
+      a.setAttribute("id", this.id + "autocomplete-list");
+      a.setAttribute("class", "autocomplete-items");
+      /*append the DIV element as a child of the autocomplete container:*/
+
+
+          var x = document.getElementsByClassName("autocomplete-items");
+
+
+      document.getElementById("compnaylistdiv").appendChild(a);
+      /*for each item in the array...*/
+      for (i = 0; i < companyDetailsList.length; i++) {
+        /*check if the item starts with the same letters as the text field value:*/
+
+
+        if (companyDetailsList[i].companyName.substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+          /*create a DIV element for each matching element:*/
+          b = document.createElement("DIV");
+          b.style.background = "white";
+          b.style.margin = "10px";
+          b.style.padding = "10px";
+          /*make the matching letters bold:*/
+          b.innerHTML = "<strong>" + companyDetailsList[i].companyName.substr(0, val.length) + "</strong>";
+          b.innerHTML += companyDetailsList[i].companyName.substr(val.length);
+          /*insert a input field that will hold the current array item's value:*/
+          b.innerHTML += "<input type='hidden'  value='" + companyDetailsList[i].companyName + "' companyId='" + companyDetailsList[i].companyId + "' companyRep='"+companyDetailsList[i].comp_representative +"'  phoneNumber='"+companyDetailsList[i].phoneNumber +"'  >";
+          /*execute a function when someone clicks on the item value (DIV element):*/
+          b.addEventListener("click", function(e) {
+              /*insert the value for the autocomplete text field:*/
+              inp.value = this.getElementsByTagName("input")[0].value;
+              selectedCompanyId=this.getElementsByTagName("input")[0].getAttribute("companyId")
+              companyRep=this.getElementsByTagName("input")[0].getAttribute("companyRep")
+              phoneNumber=this.getElementsByTagName("input")[0].getAttribute("phoneNumber")
+
+                comp_repret_element.value=companyRep
+                comp_phone_element.value=phoneNumber
+                comp_company_id_element.value=selectedCompanyId
+
+              /*close the list of autocompleted values,
+              (or any other open lists of autocompleted values:*/
+              closeAllLists();
+          });
+          a.appendChild(b);
+
+        }
+      }
+  });
+  /*execute a function presses a key on the keyboard:*/
+  inp.addEventListener("keydown", function(e) {
+      var x = document.getElementById(this.id + "autocomplete-list");
+      if (x) x = x.getElementsByTagName("div");
+      if (e.keyCode == 40) {
+        /*If the arrow DOWN key is pressed,
+        increase the currentFocus variable:*/
+        currentFocus++;
+        /*and and make the current item more visible:*/
+        addActive(x);
+      } else if (e.keyCode == 38) { //up
+        /*If the arrow UP key is pressed,
+        decrease the currentFocus variable:*/
+        currentFocus--;
+        /*and and make the current item more visible:*/
+        addActive(x);
+      } else if (e.keyCode == 13) {
+        /*If the ENTER key is pressed, prevent the form from being submitted,*/
+        e.preventDefault();
+        if (currentFocus > -1) {
+          /*and simulate a click on the "active" item:*/
+          if (x) x[currentFocus].click();
+        }
+      }
+  });
+  function addActive(x) {
+    /*a function to classify an item as "active":*/
+    if (!x) return false;
+    /*start by removing the "active" class on all items:*/
+    removeActive(x);
+    if (currentFocus >= x.length) currentFocus = 0;
+    if (currentFocus < 0) currentFocus = (x.length - 1);
+    /*add class "autocomplete-active":*/
+    x[currentFocus].classList.add("autocomplete-active");
+  }
+  function removeActive(x) {
+    /*a function to remove the "active" class from all autocomplete items:*/
+    for (var i = 0; i < x.length; i++) {
+      x[i].classList.remove("autocomplete-active");
+    }
+  }
+  function closeAllLists(elmnt) {
+    /*close all autocomplete lists in the document,
+    except the one passed as an argument:*/
+    var x = document.getElementsByClassName("autocomplete-items");
+    for (var i = 0; i < x.length; i++) {
+      if (elmnt != x[i] && elmnt != inp) {
+        x[i].parentNode.removeChild(x[i]);
+      }
+    }
+  }
+  /*execute a function when someone clicks in the document:*/
+  document.addEventListener("click", function (e) {
+      closeAllLists(e.target);
+  });
+}
+
+
+/*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
+autocomplete(document.getElementById("companyname"), companyDetailsList);
+
+
+
+
+</script>
+{% endblock %}

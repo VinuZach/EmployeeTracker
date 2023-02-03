@@ -1,0 +1,112 @@
+{% extends "basehtml.html" %}
+{% block content %}
+{% load static %}
+{% load classtags %}
+
+<style>
+    #contentBody
+    {
+        display:flex;
+    }
+
+    @media only screen and (max-width: 1130px)
+    {
+
+     #contentBody
+    {
+        display:flex;
+        flex-direction: column;
+}
+    }
+    }
+</style>
+<div style="    display: flex;
+    margin-top: 41px;
+    flex-direction: row;
+    align-items: flex-start;">
+    <img onclick="window.location.href='{{ request.scheme }}://{{ request.get_host }}/dashboard'"
+         style="height:50px;margin: 0px 50px;"
+         src="{{ request.scheme }}://{{ request.get_host }}{{MEDIA_URL}}/media/static_images/back_icon.png"/>
+
+    <div>
+        <h3 style="color: var(--highLights);font-family: sans-serif;letter-spacing: 5px; font-weight: bolder;     line-height: 2.5;   margin-top: 30px;
+    text-decoration: underline; text-underline-offset: 11px;text-transform: uppercase;">New Collection Details</h3>
+
+        <div id="contentBody">
+            <form method="post"
+                  style="    height: max-content;background:var(--primaryColor);padding: 20px;margin:30px 10px;border-radius: 10px; display: flex;flex-direction: column; align-items: center;">
+                {% csrf_token %}
+                <div style="display: flex;flex-direction: row; align-items: center;    width: 100%;">
+
+                    <div>
+                        <label>Follow up Date</label>
+                        <div onclick="showDatePicker()"
+                             style="display:flex;padding: 0px 15px;align-items:center; margin-top: 10px;   text-transform: uppercase;color: white;">
+                            <input id="newDate" name="newDate" type="date"
+                                   style="background: var(--secondaryColor);color: white;border: 0px;padding: 10px;"
+                                   required/>
+                        </div>
+                    </div>
+                    <div style="display: flex;flex-direction: column;    margin: 0px 30px;">
+                        <label style="padding: 5px;">New Remark</label>
+                        <input type="text" name="newRemark" style="padding:10px" required>
+                    </div>
+                </div>
+
+
+                <button type="submit"
+                        style="margin-top: 3em;padding: 10px 49px;background: var(--secondaryColor);color: white;border-radius: 10px;border-color: transparent;">
+                    Upload
+                </button>
+            </form>
+            <table style="overflow-y: auto; max-height: 30em;color:white; display: flex;  flex-direction: column;" cellpadding="10px" cellspacing="20px">
+                <tr>
+                    <td>
+                        Remark
+                    </td>
+
+                    <td>
+                        Feasibility
+                    </td>
+                    <td>
+                        Follow up Date
+                    </td>
+
+                </tr>
+
+                {% for item in collectionDetails %}
+
+                <tr>
+                    <td>
+                        {{item.remark}}
+                    </td>
+
+                    <td>
+                        {{item.feasibility|getFeasibilityTag}}
+                    </td>
+                    <td>
+                        {{item.followUpDate}}
+                    </td>
+                </tr>
+                {% endfor %}
+
+            </table>
+        </div>
+
+
+    </div>
+</div>
+
+<script>
+
+document.getElementById('newDate').valueAsDate = new Date();
+    function showDatePicker()
+{
+   document.getElementById("newDate").showPicker();
+
+}
+
+
+
+</script>
+{% endblock %}
