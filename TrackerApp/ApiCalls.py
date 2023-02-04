@@ -9,22 +9,19 @@ from .models import *
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth import authenticate
 from rest_framework import status
-
-
-@api_view(['GET'])
-def getLocationList_api(request):
-    locationList = Location.objects.all()
-    return JsonResponse({"locationList": LocationSerializer(locationList, many=True).data}, safe=True)
+from geopy.geocoders import Nominatim
+from geopy import distance
 
 
 @api_view(['GET'])
 def getEmployeeLocationList(request):
     print(request.GET.get("userId"))
     userLocation = UserLocation.objects.filter(author=request.GET.get("userId"))
-    totalDistance = userLocation.aggregate(Max('totalDistance'))
+    from django.db.models import Sum
+    totalDistance = userLocation.aggregate(Sum('totalDistance'))
     return JsonResponse(
         {"employeeLocationList": UserLocationSerializer(userLocation, many=True).data,
-         "totalDistance": totalDistance["totalDistance__max"]},
+         "totalDistance": totalDistance["totalDistance__sum"]},
         safe=False)
 
 
@@ -44,16 +41,86 @@ def getModeOfBusiness(request):
     return JsonResponse({"modeOfBusiness": ModeOfBusinessSerializer(modeOfBusinessList, many=True).data}, safe=False)
 
 
+@api_view(['GET'])
+def retrieveEnquiry(request):
+    enquiryList = Enquiry.objects.all()
+    return JsonResponse(EnquirySerializer(enquiryList, many=True).data, safe=False)
+
+
+def saveNewLocation(latitude, longitude, userID):
+    count = UserLocation.objects.count()
+    lat2 = latitude
+    lon2 = longitude
+    tot = 0
+    if count > 0:
+        print("esss")
+        userLocation = UserLocation.objects.filter(author=User.objects.filter(id=userID).first()).last()
+        lat1 = userLocation.lat
+        log1 = userLocation.lng
+        place1 = (lat1, log1)
+        place2 = (lat2, lon2)
+        totalDistance = distance.distance(place1, place2)
+        tot = totalDistance.km.real
+    UserLocation(lat=lat2, lng=lon2, totalDistance=tot, author=User.objects.filter(id=userID).first()).save()
+
+
 @api_view(['POST'])
 def uploadCollectionDetails(request):
-    print(request.POST)
-    return JsonResponse({"Response": "ff"})
+    companyId = request.data.get("companyID")
+    companyName = request.data.get("companyName")
+    representative = request.data.get("representative")
+    phone = request.data.get("phone")
+    location = request.data.get("location")
+    businessMode = request.data.get("businessMode")
+    enquiry = request.data.get("enquiry")
+    feasibility = request.data.get("feasibility")
+    followUpDate = request.data.get("followUpDate")
+    remarks = request.data.get("remarks")
+    reference = request.data.get("reference")
+    enquiry = str(enquiry).replace("'", "")
+    userID = request.data.get("userID")
+    latitude = request.data.get("latitude")
+    longitude = request.data.get("longitude")
+
+    json_object = json.loads(enquiry)
+    previousCollectionId = 0
+    if companyId != "-1":
+        insertedCompany = CompanyDetails.objects.get(id=companyId)
+        try:
+            previousCollectionId = CollectionData.objects.filter(companyId=companyId).aggregate(
+                Max('previousCollectionID'))['previousCollectionID__max'] + 1
+        except:
+            print("no previous data")
+        print("asdsd")
+    else:
+        insertedCompany = CompanyDetails(companyName=companyName, companyRepresentative=representative,
+                                         status=Status.ACTIVE.value, phoneNumber=phone, locationName=location,
+                                         primaryBusinessMode=businessMode)
+        businesMode = ModeOfBusiness.objects.filter(businessMode=businessMode).first()
+        if businesMode is None:
+            ModeOfBusiness(businessMode=businessMode).save()
+
+        insertedCompany.save()
+    newCollectionData = CollectionData(previousCollectionID=previousCollectionId, companyId=insertedCompany,
+                                       feasibility=int(feasibility),
+                                       followUpDate=followUpDate, remark=remarks, reference=reference,
+                                       imageFileData=None)
+    newCollectionData.save()
+    for enquiry in json_object:
+        enquiryDate = Enquiry.objects.filter(enquiryName=enquiry.get("enquiryName")).first()
+        if enquiryDate is None:
+            print(enquiry.get("enquiryName"))
+            enquiryDate = Enquiry(enquiryName=enquiry.get("enquiryName"))
+            enquiryDate.save()
+        newCollectionData.enquiry.add(enquiryDate)
+    saveNewLocation(latitude, longitude, userID)
+    return JsonResponse({"Response": "success"})
 
 
 @api_view(['GET'])
 def retrieveCompanyList(request):
     companyList = CompanyDetails.objects.all()
-    return JsonResponse(data=CompanySerializer(companyList,many=True).data, safe=False)
+    return JsonResponse(data=CompanySerializer(companyList, many=True).data, safe=False)
 
 
 @api_view(['GET'])
@@ -111,7 +178,8 @@ def retrieveCollectionData(request):
             row = cursor.fetchall()
             data = retrieveAsClass(row)
             json_string = json.dumps([ob.__dict__ for ob in data])
-    return HttpResponse(json_string)
+        return HttpResponse(json_string)
+    return HttpResponse(collectionData)
 
 
 class LatestCollectionData:
@@ -140,6 +208,10 @@ def addNewRemark(request):
     remark = request.data.get("newRemark")
     companyId = request.data.get("companyId")
     feasibility = request.data.get("feasibility")
+    userID = request.data.get("userID")
+    latitude = request.data.get("latitude")
+    longitude = request.data.get("longitude")
+    saveNewLocation(latitude, longitude, userID)
     addNewRemarkToDataBase(companyId, followUpDate, remark, feasibility)
     responseMessage = {"message": "New Remark Added"}
     return JsonResponse(responseMessage, safe=False)
@@ -156,7 +228,6 @@ def verifyUserAccount(request):
     else:
         phoneNumberList = PhoneNumber.objects.all()
         companyList = CompanyDetails.objects.all()
-        print(companyList.count())
         responseMessage = UserSerializer(user).data
         responseMessage["companyCount"] = companyList.count()
         responseMessage["phoneNumberListCount"] = phoneNumberList.count()

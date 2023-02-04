@@ -12,13 +12,16 @@ class UserLocation(models.Model):
 
 
 class Location(models.Model):
-    locationName = models.CharField(max_length=100, blank=False)
+    locationName = models.CharField(max_length=100, blank=False, default="")
 
 
 class ModeOfBusiness(models.Model):
     businessMode = models.CharField(max_length=50, blank=False)
 
     def __str__(self):
+        return self.businessMode
+
+    def __unicode__(self):
         return self.businessMode
 
 
@@ -39,6 +42,9 @@ class CompanyDetails(models.Model):
     companyRepresentative = models.CharField(max_length=100, blank=False)
     modeOfBusiness = models.ManyToManyField(ModeOfBusiness)
     status = models.IntegerField(choices=Status.choices, default=Feasibility.LOW)
+    locationName = models.CharField(max_length=100, blank=False, default="")
+    phoneNumber = models.CharField(max_length=20, default="")
+    primaryBusinessMode = models.CharField(max_length=50, blank=True, default="")
 
 
 class PhoneNumber(models.Model):
@@ -47,10 +53,6 @@ class PhoneNumber(models.Model):
 
     def __str__(self):
         return self.phoneNumber
-
-
-def __str__(self):
-    return "companyName : " + self.companyName + " \n companyRepresentative " + str(self.companyRepresentative)
 
 
 class Enquiry(models.Model):

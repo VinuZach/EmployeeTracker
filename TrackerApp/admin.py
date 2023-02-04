@@ -3,7 +3,7 @@ from .models import *
 
 # Register your models here.
 admin.site.register(PhoneNumber)
-admin.site.register(Location)
+
 admin.site.register(ModeOfBusiness)
 admin.site.register(CollectionData)
 admin.site.register(CompanyDetails)

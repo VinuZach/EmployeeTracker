@@ -8,28 +8,22 @@ class UserLocationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class LocationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Location
-        fields = ["locationName", "id"]
-
-
 class ModeOfBusinessSerializer(serializers.ModelSerializer):
     class Meta:
         model = ModeOfBusiness
         fields = ["businessMode", "id"]
 
 
+class EnquirySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Enquiry
+        fields = "__all__"
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["username", 'is_superuser']
-
-
-class CompanySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CompanyDetails
-        fields = ["id", "companyName", "companyRepresentative", "status"]
+        fields = ["username", 'is_superuser',"id"]
 
 
 class PhoneNumberSerializer(serializers.ModelSerializer):
@@ -42,3 +36,15 @@ class CollectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = CollectionData
         fields = '__all__'
+
+
+class CompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CompanyDetails
+        fields = ["id",
+                  "companyName",
+                  "companyRepresentative",
+                  "status",
+                  "locationName",
+                  "phoneNumber",
+                  "primaryBusinessMode"]

@@ -52,9 +52,9 @@ return
         }).then(data =>{
 
               if(data.totalDistance!=null)
-              totalDistance.innerHTML=data.totalDistance
+              totalDistance.innerHTML=data.totalDistance+"  km"
               else
-              totalDistance.innerHTML=0
+              totalDistance.innerHTML=0+"  km"
               displayDistanceDetail(data.employeeLocationList)
         })
 }
