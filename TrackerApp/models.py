@@ -9,6 +9,7 @@ class UserLocation(models.Model):
     lng = models.FloatField('Longitude', blank=False)
     totalDistance = models.FloatField('totalDistance', blank=False, default=0)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+    isFromApp = models.BooleanField(default=False)
 
 
 class Location(models.Model):

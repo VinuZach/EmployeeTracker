@@ -52,16 +52,17 @@ def saveNewLocation(latitude, longitude, userID):
     lat2 = latitude
     lon2 = longitude
     tot = 0
+    user = User.objects.filter(id=userID).first()
     if count > 0:
         print("esss")
-        userLocation = UserLocation.objects.filter(author=User.objects.filter(id=userID).first()).last()
+        userLocation = UserLocation.objects.filter(author=user, isFromApp=True).last()
         lat1 = userLocation.lat
         log1 = userLocation.lng
         place1 = (lat1, log1)
         place2 = (lat2, lon2)
         totalDistance = distance.distance(place1, place2)
         tot = totalDistance.km.real
-    UserLocation(lat=lat2, lng=lon2, totalDistance=tot, author=User.objects.filter(id=userID).first()).save()
+    UserLocation(lat=lat2, lng=lon2, totalDistance=tot, author=user, isFromApp=True).save()
 
 
 @api_view(['POST'])
