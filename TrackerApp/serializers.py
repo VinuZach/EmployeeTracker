@@ -23,7 +23,13 @@ class EnquirySerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["username", 'is_superuser',"id"]
+        fields = ["username", 'is_superuser', "id"]
+
+
+class LocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Location
+        fields = '__all__'
 
 
 class PhoneNumberSerializer(serializers.ModelSerializer):

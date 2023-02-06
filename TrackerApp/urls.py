@@ -13,6 +13,7 @@ urlpatterns = [
 ]
 
 urlpatterns += [
+    path("getAllLocationList", getLocationList_api),
     path("getAllModeOfBusiness", getModeOfBusiness),
     path("verifyUserAccount", verifyUserAccount),
     path("uploadCollectionDetails", uploadCollectionDetails),

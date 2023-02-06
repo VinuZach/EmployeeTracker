@@ -146,6 +146,12 @@ def getPreviousCollectionDetails(request):
 
 
 @api_view(['GET'])
+def getLocationList_api(request):
+    locationList = Location.objects.all()
+    return JsonResponse({"locationList": LocationSerializer(locationList, many=True).data}, safe=True)
+
+
+@api_view(['GET'])
 def retrieveCollectionData(request):
     startDate = request.GET.get("startDate")
     endDate = request.GET.get("endDate")
