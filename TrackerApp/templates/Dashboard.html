@@ -679,10 +679,9 @@ function retrieveModeOfBusiness()
         }).then(data =>{
             modeOfBusiness=data.modeOfBusiness
 
-            if(modeOfBusiness.length>0)
-            {
+
                 open_CloseDialog(true,'businessMode')
-            }
+
         })
 
 
@@ -695,11 +694,8 @@ function retrieveLocationList()
             return response.json();
         }).then(data =>{
             locationList=data.locationList
-
-            if(locationList.length>0)
-            {
                 open_CloseDialog(true,'location')
-            }
+
         })
 }
 
