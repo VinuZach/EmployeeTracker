@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '%^!0oe5p!(5--kagjfj1c6kx5cz*a6v3k@)hca=)3ikxzmx2yi'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['35.154.54.247', 'ec2-35-154-54-247.ap-south-1.compute.amazonaws.com', '127.0.0.1']
 
@@ -132,3 +132,5 @@ SECURE_HSTS_SECONDS = 31536000
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
