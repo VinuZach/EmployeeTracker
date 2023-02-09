@@ -470,7 +470,7 @@ if(data.length>=1)
           clone.querySelector("#companyName").innerHTML=data[i].companyName
           clone.querySelector("#addNewRemark").onclick=
           function(){
-          window.location.href='{{ request.scheme }}://{{ request.get_host }}/addNewRemarks/'+data[0].companyId
+          window.location.href='{{ request.scheme }}://{{ request.get_host }}/addNewRemarks/'+data[i].companyId
           };
 
           clone.querySelector("#closeDeal").onclick=

@@ -20,12 +20,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@i#m_7h1&*1h_-o!e7^%_8+)nlw*e(a!n0-fcyhh-xl%b#2%!*'
+SECRET_KEY = '%^!0oe5p!(5--kagjfj1c6kx5cz*a6v3k@)hca=)3ikxzmx2yi'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['35.154.54.247', 'ec2-35-154-54-247.ap-south-1.compute.amazonaws.com','127.0.0.1']
+ALLOWED_HOSTS = ['35.154.54.247', 'ec2-35-154-54-247.ap-south-1.compute.amazonaws.com', '127.0.0.1']
 
 # Application definition
 
@@ -34,6 +34,7 @@ REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'TrackerApp.ApiDirectory.ApiExceptionMessages.custom_exception_handler',
 
 }
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -127,3 +128,7 @@ MEDIA_URL = '/media/'
 
 LOGOUT_REDIRECT_URL = '/login'
 LOGIN_URL = '/login'
+SECURE_HSTS_SECONDS = 31536000
+SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True

@@ -249,7 +249,7 @@ def addNewRemarkToDataBase(companyId, followUpDate, remark, feasibility):
     print(feasibility)
     collectionDetails = CollectionData.objects.filter(companyId=companyId)
     previousValue = collectionDetails.aggregate(Max('previousCollectionID'))
-    newCollectionData = CollectionData(previousCollectionID=previousValue["previousCollectionID__max"],
+    newCollectionData = CollectionData(previousCollectionID=previousValue["previousCollectionID__max"]+1,
                                        companyId=collectionDetails.first().companyId,
                                        feasibility=feasibility,
                                        followUpDate=followUpDate, remark=remark,
