@@ -1,6 +1,6 @@
 Customer tracker website 
 
-it works along with the mobile application https://github.com/VinuZach/EmployeeTrackerAndroid by tracking the location of the employee as a report  and the collection details along with its assosiated entries
+it works along with the [mobile application](https://github.com/VinuZach/EmployeeTrackerAndroid) by tracking the location of the employee as a report  and the collection details along with its assosiated entries
 
 ![Screenshot 2024-08-28 at 4 12 45 PM](https://github.com/user-attachments/assets/a40d2779-9975-475d-aecc-25d19dc2b8b8)
 
